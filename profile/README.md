@@ -16,9 +16,9 @@
 
 ## What we build
 
-- **Community tools** — Discord bots and management systems for active communities
-- **Web platforms** — Status pages, portals, and multi-tenant SaaS products
-- **Business software** — Custom solutions tailored to real operational needs
+- Discord bots and community management tools
+- Status page platforms for services and APIs
+- Web applications for modern communities
 
 ---
 
@@ -26,10 +26,9 @@
 
 | Project | Description | Status |
 |---|---|---|
-| 🛡️ **Guardian Roleplay** | Roleplay community platform & management tools | ✅ Active |
 | 📊 **Statusivo** | Multi-tenant status page platform for services & APIs | ✅ Active |
+| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | 🚀 Launching 10 Jun 2026 |
 | 🌐 **Socailly** | Social platform built for modern communities | 🔨 In Development |
-| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | ✅ Live |
 
 ---
 
