@@ -18,10 +18,10 @@
 
 | Project | Description | Status |
 |---|---|---|
-| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | ✅ Active |
+| 🛡️ **Guardian Roleplay** | Roleplay community platform & management tools | ✅ Active |
 | 📊 **Statusivo** | Multi-tenant status page platform for services & APIs | ✅ Active |
 | 🌐 **Socailly** | Social platform built for modern communities | 🔨 In Development |
-| 🛡️ **Guardian Roleplay** | Roleplay community platform & management tools | 🔨 In Development |
+| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | 🔨 In Development |
 
 ---
 
