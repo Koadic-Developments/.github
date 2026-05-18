@@ -14,18 +14,26 @@
 
 ---
 
-## 🚀 Our Projects
+## What we build
+
+- **Community tools** — Discord bots and management systems for active communities
+- **Web platforms** — Status pages, portals, and multi-tenant SaaS products
+- **Business software** — Custom solutions tailored to real operational needs
+
+---
+
+## Our Projects
 
 | Project | Description | Status |
 |---|---|---|
 | 🛡️ **Guardian Roleplay** | Roleplay community platform & management tools | ✅ Active |
 | 📊 **Statusivo** | Multi-tenant status page platform for services & APIs | ✅ Active |
 | 🌐 **Socailly** | Social platform built for modern communities | 🔨 In Development |
-| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | 🔨 In Development |
+| 🎫 **Koadic Tickets** | Discord ticket bot for community support management | ✅ Live |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
@@ -36,7 +44,7 @@
 
 ---
 
-## 📬 Contact
+## Contact
 
 Have a question or want to work with us?
 Reach out at **development@koadic.dk**
