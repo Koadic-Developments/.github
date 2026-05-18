@@ -1,0 +1,17 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: [feature]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature description
+      description: What should be built?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why is this needed?
+    validations:
+      required: true
