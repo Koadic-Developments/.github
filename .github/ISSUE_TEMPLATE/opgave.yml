@@ -1,0 +1,63 @@
+name: Opgave
+description: Et stykke arbejde der skal laves
+type: Task
+labels: ["prioritet: normal"]
+assignees: ["MrKoadic"]
+body:
+  - type: textarea
+    id: hvad
+    attributes:
+      label: Hvad skal der laves
+      description: Beskriv opgaven, som du ville forklare den til en kollega.
+      placeholder: Tidsregistreringssiden skal kunne vise afvigelser mellem planlagt og faktisk tid.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hvorfor
+    attributes:
+      label: Hvorfor
+      description: Hvad er problemet i dag, eller hvad bliver bedre bagefter?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: omraade
+    attributes:
+      label: Område
+      description: Hvor i systemet hører opgaven til?
+      options:
+        - Sikkerhed
+        - Design
+        - Database
+        - API
+        - App
+        - Drift
+        - Dokumentation
+        - Andet
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioritet
+    attributes:
+      label: Prioritet
+      options:
+        - Haster — noget er i stykker i produktion
+        - Høj — tages før almindelige opgaver
+        - Normal
+        - Lav — nice to have
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: faerdig
+    attributes:
+      label: Færdig når
+      description: Hvornår er opgaven løst? Skriv det som en tjekliste.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: false
