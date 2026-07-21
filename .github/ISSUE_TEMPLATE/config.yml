@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Sikkerhedsproblem
+    url: mailto:development@koadic.dk
+    about: Fundet et sikkerhedshul? Skriv direkte i stedet for at oprette et offentligt issue.
+  - name: Support til et Koadic-produkt
+    url: https://koadic.dk
+    about: Er du kunde og har brug for hjælp, så gå gennem supporten i stedet.
