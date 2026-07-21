@@ -1,7 +1,8 @@
-name: Tildel nye issues
+name: Sortér nye issues
 
-# Et issue uden ejer bliver liggende. Alt nyt lander automatisk hos ledelsen,
-# så intet falder mellem to stole.
+# Et issue uden ejer, prioritet eller milepæl bliver liggende og bliver glemt.
+# Alt nyt får derfor en ansvarlig, en prioritet og en milepæl med det samme.
+# Sætter man felterne selv ved oprettelsen, rører denne workflow dem ikke.
 on:
   issues:
     types: [opened]
@@ -10,24 +11,42 @@ permissions:
   issues: write
 
 jobs:
-  tildel:
-    name: Tildel til ledelsen
+  sorter:
+    name: Tildel og mærk
     runs-on: [self-hosted, koadic-vps]
     timeout-minutes: 5
     steps:
-      - name: Sæt ansvarlig
+      - name: Sæt ansvarlig, prioritet og milepæl
         uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
-            if (issue.assignees && issue.assignees.length > 0) {
-              core.info('Issue har allerede en ansvarlig — rører det ikke.');
-              return;
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+
+            if (!issue.assignees || issue.assignees.length === 0) {
+              await github.rest.issues.addAssignees({
+                owner, repo, issue_number: issue.number, assignees: ['MrKoadic']
+              });
+              core.info('Tildelt MrKoadic.');
             }
-            await github.rest.issues.addAssignees({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue.number,
-              assignees: ['MrKoadic']
-            });
-            core.info('Tildelt MrKoadic.');
+
+            if (!issue.labels || issue.labels.length === 0) {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['prioritet: normal']
+              });
+              core.info('Mærket som normal prioritet.');
+            }
+
+            if (!issue.milestone) {
+              const { data: ms } = await github.rest.issues.listMilestones({
+                owner, repo, state: 'open', per_page: 100
+              });
+              const drift = ms.find(m => m.title === 'Drift og vedligehold');
+              if (drift) {
+                await github.rest.issues.update({
+                  owner, repo, issue_number: issue.number, milestone: drift.number
+                });
+                core.info('Sat på milepælen Drift og vedligehold.');
+              }
+            }
