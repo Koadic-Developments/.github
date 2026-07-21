@@ -1,18 +1,31 @@
-## Hvad er lavet
+<!--
+Husk før du opretter:
+  Ansvarlig · Label · Type · Milepæl · Projekt
+Alle fem felter sættes i højre side. Et issue eller en PR uden dem bliver væk.
+-->
 
-<!-- Kort, i almindeligt sprog: hvad ændrer denne PR, og hvorfor. -->
+### Hvad ændrer denne PR
 
-## Løser
+<!-- Kort og i klar tekst. Hvad kan systemet nu, som det ikke kunne før? -->
 
-<!-- Fx: Løser #12 -->
+### Hvorfor
 
-## Sådan er det testet
+<!-- Hvilket problem løser det? Link til issuet: Closes #  -->
 
-<!-- Hvad blev der konkret afprøvet? Skriv "ikke testet" hvis det er tilfældet — vær ærlig. -->
+Closes #
 
-- [ ] Automatisk kodekontrol er grøn
-- [ ] Afprøvet manuelt
+### Sådan er det testet
 
-## Er der noget at være opmærksom på?
+<!-- Hvad har du konkret kørt eller klikket dig igennem? Skriv resultatet, ikke kun at du testede. -->
 
-<!-- Ændringer i database, konfiguration eller noget der kan gå galt. Skriv "nej" hvis intet. -->
+- [ ] Kodekontrollen er grøn
+- [ ] Testet lokalt eller på staging
+- [ ] Ingen ændringer i konfiguration eller database der mangler at blive kørt
+
+### Skal der gøres noget efter merge
+
+<!-- Migration, cron, indstilling, deploy-rækkefølge — eller "nej". -->
+
+### Skærmbilleder
+
+<!-- Ved ændringer i brugerfladen: før og efter. -->
