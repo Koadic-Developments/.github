@@ -1,0 +1,45 @@
+name: Ny funktion
+description: En idé til noget systemet ikke kan i dag
+type: Feature
+labels: ["prioritet: lav"]
+assignees: ["MrKoadic"]
+body:
+  - type: textarea
+    id: idé
+    attributes:
+      label: Idéen
+      description: Hvad skal systemet kunne?
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Hvilket problem løser det
+      description: Hvad gør vi i dag i stedet, og hvorfor er det besværligt?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: omraade
+    attributes:
+      label: Område
+      options:
+        - Sikkerhed
+        - Design
+        - Database
+        - API
+        - App
+        - Drift
+        - Dokumentation
+        - Andet
+    validations:
+      required: true
+
+  - type: textarea
+    id: noter
+    attributes:
+      label: Noter
+      description: Skitser, eksempler fra andre systemer, eller ting der skal tænkes med.
+    validations:
+      required: false
