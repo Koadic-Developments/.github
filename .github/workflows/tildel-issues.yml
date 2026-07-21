@@ -1,0 +1,33 @@
+name: Tildel nye issues
+
+# Et issue uden ejer bliver liggende. Alt nyt lander automatisk hos ledelsen,
+# så intet falder mellem to stole.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  tildel:
+    name: Tildel til ledelsen
+    runs-on: [self-hosted, koadic-vps]
+    timeout-minutes: 5
+    steps:
+      - name: Sæt ansvarlig
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            if (issue.assignees && issue.assignees.length > 0) {
+              core.info('Issue har allerede en ansvarlig — rører det ikke.');
+              return;
+            }
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              assignees: ['MrKoadic']
+            });
+            core.info('Tildelt MrKoadic.');
