@@ -1,0 +1,69 @@
+name: Fejl
+description: Noget virker ikke som det skal
+type: Bug
+labels: ["prioritet: høj"]
+assignees: ["MrKoadic"]
+body:
+  - type: textarea
+    id: hvad
+    attributes:
+      label: Hvad sker der
+      description: Beskriv fejlen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: forventet
+    attributes:
+      label: Hvad burde der ske i stedet
+    validations:
+      required: true
+
+  - type: textarea
+    id: trin
+    attributes:
+      label: Sådan fremkalder man fejlen
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: hvor
+    attributes:
+      label: Hvor
+      options:
+        - Hjemmesiden
+        - Medarbejder-systemet
+        - iOS-appen
+        - Management Panel
+        - CRM
+        - Helpdesk
+        - Kundeportal
+        - Server / drift
+        - Andet
+    validations:
+      required: true
+
+  - type: dropdown
+    id: alvor
+    attributes:
+      label: Hvor slemt er det
+      options:
+        - Kritisk — systemet er nede eller data er i fare
+        - Alvorligt — vigtig funktion virker ikke
+        - Generende — der findes en omvej
+        - Kosmetisk
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: ekstra
+    attributes:
+      label: Skærmbilleder eller fejlbeskeder
+      description: Træk billeder direkte ind i feltet.
+    validations:
+      required: false
