@@ -21,6 +21,15 @@ Closes #
 - [ ] Kodekontrollen er grøn
 - [ ] Testet lokalt eller på staging
 - [ ] Ingen ændringer i konfiguration eller database der mangler at blive kørt
+- [ ] Har jeg skrevet en ny prøve: har jeg set den **fejle**, før den blev grøn?
+- [ ] Har jeg **åbnet siden** — ikke kun set CI være grøn?
+
+<!--
+De to sidste er ikke pynt. Grøn CI beviser noget om CI's maskine, ikke om
+serverens: VPS'en kører PHP uden dom og xml, og en gitignoreret fil når aldrig
+derover. Og en prøve, der aldrig har været rød, beviser ingenting.
+Se CONTRIBUTING.md, trin 2 og 5.
+-->
 
 ### Skal der gøres noget efter merge
 
