@@ -39,11 +39,17 @@ jobs:
       - name: PHP
         run: |
           set -uo pipefail
+          # «core.quotePath=false». Uden den saetter git ANFOERSELSTEGN om stier
+          # med aeoeaa: app/hr/"frav\303\246r.php". php -l fik saa et filnavn
+          # MED citationstegn i, fandt ingen fil, og meldte det som en
+          # syntaksfejl. To repoer blev udhaengt for fejl, de ikke havde.
+          #
+          # Huset skriver dansk i filnavne. Saa skal vaerktoejet kunne laese dem.
           n=0; f=0
           while IFS= read -r x; do
             n=$((n+1))
             php -l "$x" >/dev/null 2>&1 || { echo "::error file=$x::syntaksfejl"; php -l "$x" || true; f=$((f+1)); }
-          done < <(git ls-files '*.php')
+          done < <(git -c core.quotePath=false ls-files '*.php')
           echo "  $n PHP-filer, $f fejl"
           [ "$f" -eq 0 ]
 
@@ -55,7 +61,7 @@ jobs:
             head -1 "$x" | grep -qE '^#!.*(bash|sh)' || continue
             n=$((n+1))
             bash -n "$x" 2>/dev/null || { echo "::error file=$x::syntaksfejl"; f=$((f+1)); }
-          done < <(git ls-files '*.sh' 'bin/*' 'tools/*')
+          done < <(git -c core.quotePath=false ls-files '*.sh' 'bin/*' 'tools/*')
           echo "  $n shellscripts, $f fejl"
           [ "$f" -eq 0 ]
 
@@ -76,7 +82,7 @@ jobs:
           python3 - <<'PYKODE'
           import re, subprocess, sys
 
-          filer = subprocess.run(['git','ls-files','*.php','*.js','*.ts','*.tsx','*.jsx'],
+          filer = subprocess.run(['git','-c','core.quotePath=false','ls-files','*.php','*.js','*.ts','*.tsx','*.jsx'],
                                  capture_output=True, text=True).stdout.split()
           spring = ('tests/','test/','tools/','vendor/','node_modules/')
           # «dd» er IKKE med. To tegn er for kort: moenstret ramte «dd(» inde i
@@ -124,7 +130,7 @@ jobs:
           python3 - <<'PYKODE'
           import re, subprocess, sys
 
-          filer = subprocess.run(['git','ls-files','*.php'], capture_output=True, text=True).stdout.split()
+          filer = subprocess.run(['git','-c','core.quotePath=false','ls-files','*.php'], capture_output=True, text=True).stdout.split()
           kommentar = re.compile(r'^\s*(//|\*|#|/\*)')
           moenster = re.compile(r'\bexit\s*\(\s*[\'"]')
 
