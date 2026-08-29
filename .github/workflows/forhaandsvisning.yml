@@ -33,6 +33,9 @@ jobs:
   udrul:
     # Kun paa VPS'en. Den har mappen, Caddy og PHP-FPM.
     runs-on: [self-hosted, koadic-vps]
+    permissions:
+      contents: read
+      pull-requests: write
     if: github.event.action != 'closed'
     steps:
       - uses: actions/checkout@v4
@@ -101,36 +104,71 @@ jobs:
         run: |
           set -uo pipefail
           ADR="https://pr-${PR}-${SYSTEM}.koadic.dk/"
-          MAERKE="<!-- koadic-forhaandsvisning -->"
 
-          # ÉN kommentar, der opdateres — ikke en ny for hvert push. Tredive
-          # ens kommentarer paa en PR er stoej, ingen laeser.
-          ID=$(gh api "repos/$REPO/issues/$PR/comments" \
-                 --jq "[.[] | select(.body | contains(\"$MAERKE\"))] | .[0].id // empty" 2>/dev/null || true)
-
-          # KROPPEN BYGGES LINJE FOR LINJE, ikke som en flerlinjet streng.
-          # En streng, hvis linjer staar i kolonne 0, AFSLUTTER YAML-blokken —
-          # og en linje, der begynder med «*», laeses som et alias. Det kostede
-          # en workflow, der ikke kunne parses.
+          # ADRESSEN I OPSUMMERINGEN FOERST. Den staar der, ogsaa hvis
+          # kommentaren fejler — og en forhaandsvisning, man ikke kan finde
+          # adressen paa, er ikke til megen nytte.
           {
-            printf '%s\n\n' "$MAERKE"
-            printf '### Forhaandsvisning\n\n'
-            printf '**%s**\n\n' "$ADR"
-            printf 'Samme vej som produktionen — rsync, Caddy, PHP-FPM. Egen database, '
-            printf 'som ikke kan naa den rigtige.\n\n'
-            printf 'Den forsvinder, naar PR-en lukkes.\n\n'
-            printf '<sub>Opdateret %s UTC · commit `%s`</sub>\n' \
-              "$(date -u '+%d-%m-%Y %H:%M')" "$(git rev-parse --short HEAD)"
-          } > /tmp/fv-kommentar.md
+            echo "### Forhaandsvisning"
+            echo ""
+            echo "**$ADR**"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ -n "$ID" ]; then
-            gh api -X PATCH "repos/$REPO/issues/comments/$ID" \
-              -F body=@/tmp/fv-kommentar.md >/dev/null
-            echo "  kommentaren opdateret"
+          # CURL OG IKKE gh. Den selvhostede runner er produktionsserveren, og
+          # der skal ikke installeres et vaerktoej mere for en kommentars skyld.
+          MAERKE="<!-- koadic-forhaandsvisning -->"
+          API="https://api.github.com/repos/$REPO"
+
+          python3 - "$ADR" "$MAERKE" > /tmp/fv-krop.json <<'PYKODE'
+          import json, subprocess, sys
+          adr, maerke = sys.argv[1], sys.argv[2]
+          sha = subprocess.run(['git','rev-parse','--short','HEAD'],
+                               capture_output=True, text=True).stdout.strip()
+          krop = (
+              maerke + "\n\n"
+              "### Forhaandsvisning\n\n"
+              "**" + adr + "**\n\n"
+              "Samme vej som produktionen — rsync, Caddy, PHP-FPM. Egen database, "
+              "som ikke kan naa den rigtige.\n\n"
+              "Den forsvinder, naar PR-en lukkes.\n\n"
+              "<sub>commit `" + sha + "`</sub>\n"
+          )
+          json.dump({"body": krop}, sys.stdout)
+          PYKODE
+
+          # ÉN kommentar, der opdateres — ikke en ny for hvert push.
+          ID=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+                    -H "Accept: application/vnd.github+json" \
+                    "$API/issues/$PR/comments?per_page=100" \
+               | python3 -c "
+          import json,sys
+          try: d=json.load(sys.stdin)
+          except Exception: sys.exit()
+          for k in d:
+              if '$MAERKE' in (k.get('body') or ''):
+                  print(k['id']); break
+          ")
+
+          if [ -n "${ID:-}" ]; then
+            KODE=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH \
+                     -H "Authorization: Bearer $GH_TOKEN" \
+                     -H "Accept: application/vnd.github+json" \
+                     -d @/tmp/fv-krop.json "$API/issues/comments/$ID")
+            echo "  kommentaren opdateret ($KODE)"
           else
-            gh pr comment "$PR" --repo "$REPO" --body-file /tmp/fv-kommentar.md >/dev/null
-            echo "  kommentaren skrevet"
+            KODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+                     -H "Authorization: Bearer $GH_TOKEN" \
+                     -H "Accept: application/vnd.github+json" \
+                     -d @/tmp/fv-krop.json "$API/issues/$PR/comments")
+            echo "  kommentaren skrevet ($KODE)"
           fi
+
+          # En kommentar, der ikke kan skrives, maa ikke faelde en
+          # forhaandsvisning, der VIRKER. Adressen staar i opsummeringen.
+          case "$KODE" in
+            200|201) ;;
+            *) echo "::warning::kunne ikke skrive kommentaren ($KODE) — adressen staar i opsummeringen" ;;
+          esac
 
   ryd-op:
     runs-on: [self-hosted, koadic-vps]
