@@ -1,0 +1,154 @@
+# ══ FORHAANDSVISNING PR. PULL REQUEST ══
+#
+# Hver aaben PR faar sin egen adresse: pr-<n>-<system>.koadic.dk.
+#
+# SAMME VEJ SOM PRODUKTIONEN. rsync til en mappe, Caddy + PHP-FPM ovenpaa —
+# noejagtig som de rigtige udrulninger. En forhaandsvisning, der koerer ad en
+# anden vej (en container, en anden PHP, en anden webserver), viser ikke det,
+# der bliver sendt. Saa er den ikke en forhaandsvisning; saa er den et gaet.
+#
+# Saadan kaldes den:
+#
+#     jobs:
+#       forhaandsvisning:
+#         uses: Koadic-Developments/.github/.github/workflows/forhaandsvisning.yml@main
+#         with:
+#           system: design
+
+name: Forhaandsvisning
+
+on:
+  workflow_call:
+    inputs:
+      system:
+        description: 'Systemets korte navn. Bliver til pr-<n>-<system>.koadic.dk'
+        type: string
+        required: true
+      offentlig-mappe:
+        description: 'Hvor index.php ligger, set fra repoets rod.'
+        type: string
+        default: 'public'
+
+jobs:
+  udrul:
+    # Kun paa VPS'en. Den har mappen, Caddy og PHP-FPM.
+    runs-on: [self-hosted, koadic-vps]
+    if: github.event.action != 'closed'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Laeg den paa plads
+        env:
+          SYSTEM: ${{ inputs.system }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          MAPPE="/opt/previews/${SYSTEM}-${PR}"
+
+          # --delete, saa en fjernet fil ogsaa forsvinder fra forhaandsvisningen.
+          # Uden den ville en PR, der SLETTER noget, se ud som om den ikke gjorde.
+          mkdir -p "$MAPPE"
+          rsync -a --delete \
+            --exclude '.git' --exclude '.github' \
+            --exclude '.env' --exclude '.env.forhaandsvisning' \
+            ./ "$MAPPE/"
+
+          # Opsaetningen. Se includes/env.php: kun kode under /opt/previews
+          # laeser den her fil — graensen er stien, ikke filnavnet.
+          cp /opt/previews/.env.skabelon "$MAPPE/.env.forhaandsvisning"
+          chmod 640 "$MAPPE/.env.forhaandsvisning"
+
+          # PHP-FPM koerer som www-data og skal kunne laese det hele.
+          chmod -R a+rX "$MAPPE"
+          chgrp -R www-data "$MAPPE" 2>/dev/null || true
+
+          echo "  udrullet til $MAPPE ($(find "$MAPPE" -type f | wc -l | tr -d ' ') filer)"
+
+      - name: Er den der, og svarer den?
+        env:
+          SYSTEM: ${{ inputs.system }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -uo pipefail
+          ADR="https://pr-${PR}-${SYSTEM}.koadic.dk/"
+
+          # ET GROENT TRIN ER IKKE «UDE». Vi henter siden og ser paa svaret.
+          for i in 1 2 3 4 5; do
+            K=$(curl -s -o /tmp/fv.html -w '%{http_code}' -m 20 "$ADR" || echo 000)
+            case "$K" in
+              200|302) echo "  $ADR svarer $K"; exit 0 ;;
+            esac
+            echo "  forsoeg $i: $K — venter"
+            sleep 4
+          done
+
+          echo "::error::forhaandsvisningen svarer ikke ($K)"
+          head -c 400 /tmp/fv.html || true
+          exit 1
+
+      - name: Skriv adressen paa PR'en
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SYSTEM: ${{ inputs.system }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+          ADR="https://pr-${PR}-${SYSTEM}.koadic.dk/"
+          MAERKE="<!-- koadic-forhaandsvisning -->"
+
+          # ÉN kommentar, der opdateres — ikke en ny for hvert push. Tredive
+          # ens kommentarer paa en PR er stoej, ingen laeser.
+          ID=$(gh api "repos/$REPO/issues/$PR/comments" \
+                 --jq "[.[] | select(.body | contains(\"$MAERKE\"))] | .[0].id // empty" 2>/dev/null || true)
+
+          # KROPPEN BYGGES LINJE FOR LINJE, ikke som en flerlinjet streng.
+          # En streng, hvis linjer staar i kolonne 0, AFSLUTTER YAML-blokken —
+          # og en linje, der begynder med «*», laeses som et alias. Det kostede
+          # en workflow, der ikke kunne parses.
+          {
+            printf '%s\n\n' "$MAERKE"
+            printf '### Forhaandsvisning\n\n'
+            printf '**%s**\n\n' "$ADR"
+            printf 'Samme vej som produktionen — rsync, Caddy, PHP-FPM. Egen database, '
+            printf 'som ikke kan naa den rigtige.\n\n'
+            printf 'Den forsvinder, naar PR-en lukkes.\n\n'
+            printf '<sub>Opdateret %s UTC · commit `%s`</sub>\n' \
+              "$(date -u '+%d-%m-%Y %H:%M')" "$(git rev-parse --short HEAD)"
+          } > /tmp/fv-kommentar.md
+
+          if [ -n "$ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$ID" \
+              -F body=@/tmp/fv-kommentar.md >/dev/null
+            echo "  kommentaren opdateret"
+          else
+            gh pr comment "$PR" --repo "$REPO" --body-file /tmp/fv-kommentar.md >/dev/null
+            echo "  kommentaren skrevet"
+          fi
+
+  ryd-op:
+    runs-on: [self-hosted, koadic-vps]
+    if: github.event.action == 'closed'
+    steps:
+      - name: Fjern forhaandsvisningen
+        env:
+          SYSTEM: ${{ inputs.system }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          MAPPE="/opt/previews/${SYSTEM}-${PR}"
+
+          # EN LUKKET PR SKAL RYDDE OP EFTER SIG. Ellers har VPS'en tredive
+          # halvdoede kopier om et halvt aar — og en af dem koerer maaske
+          # stadig kode, ingen har set paa siden marts.
+          case "$MAPPE" in
+            /opt/previews/*-*) ;;
+            *) echo "::error::mistaenkelig sti: $MAPPE"; exit 1 ;;
+          esac
+
+          if [ -d "$MAPPE" ]; then
+            rm -rf "$MAPPE"
+            echo "  fjernet: $MAPPE"
+          else
+            echo "  fandtes ikke i forvejen: $MAPPE"
+          fi
