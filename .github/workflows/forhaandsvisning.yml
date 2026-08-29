@@ -53,10 +53,16 @@ jobs:
             --exclude '.env' --exclude '.env.forhaandsvisning' \
             ./ "$MAPPE/"
 
-          # Opsaetningen. Se includes/env.php: kun kode under /opt/previews
-          # laeser den her fil — graensen er stien, ikke filnavnet.
-          cp /opt/previews/.env.skabelon "$MAPPE/.env.forhaandsvisning"
-          chmod 640 "$MAPPE/.env.forhaandsvisning"
+          # INGEN OPSAETNING SKRIVES HER. Den ligger i /etc/koadic-<system>-fv.env,
+          # ejet af root og laest af www-data.
+          #
+          # Foerste udgave kopierede en skabelon ind i mappen — men den skulle
+          # indeholde AUTH_NOEGLE, den RIGTIGE noegle til auth, og laa et sted
+          # ghrunner kunne laese. En env, en workflow kan laese, er en
+          # hemmelighed, en workflow kan laekke.
+          #
+          # Koden vaelger selv den rigtige fil, naar den koerer under
+          # /opt/previews — se includes/env.php.
 
           # PHP-FPM koerer som www-data og skal kunne laese det hele.
           chmod -R a+rX "$MAPPE"
