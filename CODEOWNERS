@@ -1,0 +1,16 @@
+# Hvem der ejer hvad.
+#
+# ══ DEN HER FIL GÆLDER KUN .github-REPOET ══
+#
+# GitHub understøtter IKKE en fælles CODEOWNERS for en organisation, sådan som
+# den gør for SECURITY.md og CONTRIBUTING.md. Hvert repo skal have sin egen.
+#
+# ══ OG «KRÆV GENNEMGANG FRA EJEREN» ER SLÅET FRA MED VILJE ══
+#
+# Man kan ikke godkende sin egen pull request. Med én person i organisationen
+# ville «require_code_owner_reviews» derfor blokere hver eneste PR — også
+# ejerens egne. Filen står her for at DOKUMENTERE ejerskabet og vise det i
+# PR-sidebjælken; spærringen slås til den dag, der er to, der kan godkende
+# hinandens arbejde.
+
+* @MrKoadic
