@@ -117,38 +117,201 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: exit med en tekst
+      - name: exit med en tekst, hvor koden bliver laest
         run: |
-          # exit('tekst') i PHP afslutter med kode NUL. Kaldt fra et script
-          # betyder det «alt gik godt», og det gjorde det ikke. Fælden har
-          # kostet huset en tjenesteliste, der aldrig blev lagt ind, mens
-          # udrulningen stod grøn.
+          # exit('tekst') og die('tekst') afslutter med kode NUL. Det er kun en
+          # fejl, hvis NOGEN LAESER koden — altsaa naar filen koeres som
+          # «php fil.php» fra CI, cron eller et udrulningsscript. I en
+          # webforespoergsel laeser ingen procesens exitkode, og der er
+          # exit('Not found.') helt i orden.
           #
-          # KOMMENTARER TÆLLER IKKE MED. Første udgave meldte fejl på de to
+          # ══ HVORFOR DEN BLEV SNAEVRET IND ══
+          #
+          # Foerste udgave meldte HVER exit('tekst') i hver .php-fil: 68 fund paa
+          # tvaers af huset, naesten alle websider, hvor koden aldrig laeses.
+          # Porten stod derfor roed paa main i ALLE repoer i to doegn. En
+          # vagtpost, der altid er roed, bliver ignoreret — og saa mister man
+          # ogsaa de fund, der ER rigtige.
+          #
+          # Efter indsnaevringen: 6 fund, og alle seks var ægte.
+          #   · Fem proever i Faktura naegtede at koere mod produktionsdatabasen
+          #     og afsluttede med kode nul. CI saa GROENNE proever, der aldrig
+          #     koerte.
+          #   · KSP's bootstrap afsluttede med nul, naar konfigurationen
+          #     manglede. Et script, der hentede den ind, meldte succes uden at
+          #     have gjort noget.
+          #
+          # Til gengaeld faanger den nu ogsaa die('tekst'), og den foelger
+          # require/include, saa en hjaelpefil arver sin kalders vilkaar.
+          #
+          # KOMMENTARER TAELLER IKKE MED. En tidlig udgave meldte fejl paa de
           # steder i koden, der FORKLARER reglen — og et tjek, der straffer
-          # dokumentationen af sig selv, bliver slået fra.
+          # dokumentationen af sig selv, bliver slaaet fra.
           python3 - <<'PYKODE'
-          import re, subprocess, sys
+          import re, subprocess, sys, os
 
-          filer = subprocess.run(['git','-c','core.quotePath=false','ls-files','*.php'], capture_output=True, text=True).stdout.split()
-          kommentar = re.compile(r'^\s*(//|\*|#|/\*)')
-          moenster = re.compile(r'\bexit\s*\(\s*[\'"]')
+          # ── Hvilke filer koeres fra kommandolinjen?
+          #
+          # exit('tekst') giver kode NUL. Det er kun en fejl, hvis NOGEN LAESER koden —
+          # altsaa naar filen koeres som «php fil.php» fra CI, cron, et udrulningsscript
+          # eller i haanden. I en webforespoergsel laeser ingen procesens exitkode, og
+          # der er exit('Not found.') helt i orden.
+          #
+          # En fil regnes som kommandolinje, hvis den siger det selv, eller hvis noget
+          # i repoet kalder den.
+          filer = subprocess.run(['git','-c','core.quotePath=false','ls-files'],
+                                 capture_output=True, text=True).stdout.split('\n')
+          filer = [f for f in filer if f]
+          php = [f for f in filer if f.endswith('.php') and not f.startswith('vendor/')
+                 and '/vendor/' not in f]
 
-          fund = []
-          for f in filer:
-              if f.startswith('vendor/'): continue
-              try: linjer = open(f, encoding='utf-8', errors='replace').read().split('\n')
+          # 1) Filen siger det selv: shebang eller et SAPI-tjek.
+          def siger_det_selv(sti):
+              try:
+                  txt = open(sti, encoding='utf-8', errors='replace').read(4000)
+              except OSError:
+                  return False
+              return txt.startswith('#!') or 'php_sapi_name' in txt or 'PHP_SAPI' in txt
+
+          # 2) Noget kalder den: et workflow, et shellscript, en Makefile, en crontab.
+          kaldere = [f for f in filer if f.endswith(('.yml','.yaml','.sh','.bash'))
+                     or os.path.basename(f) in ('Makefile','crontab','Dockerfile')]
+          kaldt = set()
+          kald = re.compile(r'\bphp\d?(?:\s+-[^\s]+)*\s+([^\s;|&"\']+\.php)')
+          for k in kaldere:
+              try: txt = open(k, encoding='utf-8', errors='replace').read()
               except OSError: continue
-              for nr, l in enumerate(linjer, 1):
-                  if kommentar.match(l): continue
-                  if moenster.search(l):
-                      fund.append((f, nr, l.strip()[:90]))
+              for m in kald.finditer(txt):
+                  kaldt.add(m.group(1).lstrip('./'))
+
+          # 3) Mapper, hvor der pr. sædvane kun ligger kommandolinjeting.
+          MAPPER = ('tools/', 'cron/', 'bin/', 'scripts/', 'tests/', 'database/tools/')
+          def i_cli_mappe(sti):
+              return any(('/' + sti).find('/' + m) >= 0 for m in MAPPER)
+
+          froe = [f for f in php if siger_det_selv(f) or f in kaldt or i_cli_mappe(f)]
+
+          # 4) ── OG ALT, HVAD DE HENTER IND ──
+          #
+          # En fil i includes/ er hverken web eller kommandolinje af sig selv; den er
+          # det, dens kaldere er. Henter et cron-job en fil ind, og den fil siger
+          # exit('tekst'), saa afsluttes JOBBET med kode nul. Uden det her trin ville
+          # porten se de fem prøver, der nægter at køre, men ikke den config.php, de
+          # alle henter ind.
+          inkl = re.compile(r'\b(?:require|include)(?:_once)?\s*\(?\s*'
+                            r'(?:__DIR__\s*\.\s*)?[\'"]([^\'"]+\.php)[\'"]')
+          kendte = set(php)
+
+          def hentede(sti):
+              try: txt = open(sti, encoding='utf-8', errors='replace').read()
+              except OSError: return []
+              ud = []
+              for m in inkl.finditer(txt):
+                  raa = m.group(1).lstrip('/')
+                  # Opløs i forhold til filens egen mappe, og ellers mod roden.
+                  kandidat = os.path.normpath(os.path.join(os.path.dirname(sti), raa))
+                  if kandidat in kendte: ud.append(kandidat)
+                  elif raa in kendte:    ud.append(raa)
+                  else:
+                      # Sidste forsøg: samme filnavn, ét sted i repoet.
+                      navn = os.path.basename(raa)
+                      ens = [k for k in kendte if os.path.basename(k) == navn]
+                      if len(ens) == 1: ud.append(ens[0])
+              return ud
+
+          cli, koe = set(froe), list(froe)
+          while koe:
+              for h in hentede(koe.pop()):
+                  if h not in cli:
+                      cli.add(h); koe.append(h)
+          cli = sorted(cli)
+
+          # ── I DE filer er baade exit og die en fejl. die('tekst') er praecis det
+          #    samme som exit('tekst') — ogsaa kode nul.
+          kommentar = re.compile(r'^\s*(//|\*|#|/\*)')
+          moenster  = re.compile(r'\b(?:exit|die)\s*\(\s*[\'"]')
+
+          # ── SPOERGSMAALET ER: KAN LINJEN NAAS, NAAR PHP_SAPI ER «cli»? ─────────────
+          #
+          # Ikke «naevner filen web-ting». Tre virkelige tilfaelde tvang det frem:
+          #
+          #   cron/daglig.php:53   exit("Not Found\n") — men den ligger INDE I
+          #                        «if (PHP_SAPI !== \'cli\')». Kun over HTTP.
+          #
+          #   config.php:67        exit(\'... Kontakt IT.\') — men OVER den staar
+          #                        «if (PHP_SAPI === \'cli\') { ...; exit(1); }».
+          #                        Cli-vejen er allerede afsluttet; resten er web.
+          #
+          #   tools/ryd-dublet-moeder.php   naevner baade PHP_SAPI og
+          #                        http_response_code — men som «!== \'cli\'», altsaa et
+          #                        VAERKTOEJ, DER AFVISER WEB. Alt uden for det blok er
+          #                        kun kommandolinje. Et exit(\'gik galt\') dér slap
+          #                        igennem, foer fortegnet blev laest.
+          web_tegn = re.compile(r'http_response_code\s*\(|\$_GET\b|\$_POST\b|'
+                                r'\$_SERVER\[[\'"]REQUEST_METHOD|header\s*\(')
+          sapi      = re.compile(r'(?:PHP_SAPI|php_sapi_name\s*\(\s*\))\s*(!==?|===?)\s*[\'"]cli[\'"]')
+          har_exit  = re.compile(r'\b(?:exit|die)\s*\(')
+
+          def kun_web_linjer(linjer):
+              """Linjenumre (1-baseret), som IKKE kan naas fra kommandolinjen."""
+              ude = set()
+              n = len(linjer)
+              i = 0
+              web_fra = None
+              while i < n:
+                  m = sapi.search(linjer[i])
+                  if m:
+                      negativ = m.group(1).startswith('!')
+                      # Find blokkens omfang ved at taelle tuborgklammer.
+                      dybde, j, aabnet = 0, i, False
+                      while j < n:
+                          dybde += linjer[j].count('{') - linjer[j].count('}')
+                          if '{' in linjer[j]: aabnet = True
+                          if aabnet and dybde <= 0: break
+                          j += 1
+                      if negativ:
+                          # «!== cli» → hele blokken er web.
+                          ude.update(range(i + 1, j + 2))
+                      elif any(har_exit.search(l) for l in linjer[i:j + 1]):
+                          # «=== cli» der afsluttes → alt HEREFTER er web.
+                          web_fra = j + 2
+                      i = j + 1
+                      continue
+                  i += 1
+              if web_fra:
+                  ude.update(range(web_fra, n + 1))
+              return ude
+
+          fund, sprunget = [], []
+          for f in cli:
+              try: txt = open(f, encoding='utf-8', errors='replace').read()
+              except OSError: continue
+              linjer = txt.split('\n')
+              rammer = [(nr, l) for nr, l in enumerate(linjer, 1)
+                        if not kommentar.match(l) and moenster.search(l)]
+              if not rammer: continue
+
+              # Har filen slet intet SAPI-tjek, men svarer tydeligt paa web, saa er den en
+              # webside — fx database/tools/schema-dump.php, der ligger i en
+              # vaerktoejsmappe, men laeser $_GET og saetter headere.
+              if not sapi.search(txt) and web_tegn.search(txt):
+                  sprunget.append((f, len(rammer), 'svarer kun paa web'))
+                  continue
+
+              ude = kun_web_linjer(linjer)
+              naaelige = [(nr, l) for nr, l in rammer if nr not in ude]
+              if len(naaelige) < len(rammer):
+                  sprunget.append((f, len(rammer) - len(naaelige), 'ligger i web-grenen'))
+              for nr, l in naaelige:
+                  fund.append((f, nr, l.strip()[:90]))
 
           for f, nr, l in fund:
-              print('::error file=%s,line=%d::exit() med tekst afslutter med kode 0: %s' % (f, nr, l))
-          if fund:
-              print('Skriv beskeden ud, og brug derefter exit(1).')
-          print('  %d fund' % len(fund))
+              print('::error file=%s,line=%d::exit()/die() med tekst afslutter med kode 0: %s' % (f, nr, l))
+          # Sig HVAD der blev sprunget over. En port, der tier om sin egen afgraensning,
+          # laeses som «alt er tjekket».
+          for f, n, hvorfor in sprunget:
+              print('  sprunget over: %s (%d sted(er) — %s)' % (f, n, hvorfor))
+          print('  %d php-filer, heraf %d fra kommandolinjen. %d fund.' % (len(php), len(cli), len(fund)))
           sys.exit(1 if fund else 0)
           PYKODE
 
