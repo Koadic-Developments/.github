@@ -87,10 +87,12 @@ jobs:
           # fanger den. Edges «listening on :8080» er tjenestens livstegn, ikke
           # en glemt fejlfinding, og porten stod rød på den i to døgn.
           python3 - <<'PYKODE'
-          import re, subprocess, sys
+          import os, re, subprocess, sys
 
-          filer = subprocess.run(['git','-c','core.quotePath=false','ls-files','*.php','*.js','*.ts','*.tsx','*.jsx'],
-                                 capture_output=True, text=True).stdout.split()
+          alle = subprocess.run(['git','-c','core.quotePath=false','ls-files'],
+                                capture_output=True, text=True).stdout.splitlines()
+          filer = [f for f in alle if f.endswith(('.php','.js','.ts','.tsx','.jsx'))]
+          node_roedder = tuple(os.path.dirname(f) for f in alle if os.path.basename(f) == 'package.json')
           spring = ('tests/','test/','tools/','vendor/','node_modules/')
           moenster = re.compile(r'(?<![A-Za-z_$>])(var_dump|print_r|console\.log)\s*\(|(?<![A-Za-z_])debugger\s*;')
           kommentar = re.compile(r'^\s*(//|\*|#|/\*)')
@@ -102,8 +104,10 @@ jobs:
           # «listening on :8080» er ikke en glemt fejlfinding, det er tjenestens
           # livstegn, og uden den ved man ikke, om den kom op.
           #
-          # Skellet maales, ikke gaettes: filen bruger Node-ting OG roerer aldrig
-          # document/window.
+          # Skellet maales, ikke gaettes: filen ligger under et repoets
+          # package.json OG roerer aldrig document/window. Et Node-modul kan
+          # godt have browserkode i en tekststreng, saa indholdet alene er ikke
+          # nok til at afgore, hvad filen er.
           node_tegn = re.compile(r'^#!.*\bnode\b|\bmodule\.exports\b|\brequire\s*\(|'
                                  r'\bprocess\.(env|argv|exit)\b', re.M)
 
@@ -126,7 +130,8 @@ jobs:
               except OSError: continue
               til_browser = any(f.startswith(b) or ('/'+b) in f for b in BROWSER_STIER)
               er_node = f.endswith(('.js','.ts','.mjs','.cjs')) and \
-                        bool(node_tegn.search(txt)) and not til_browser
+                        not til_browser and any(rod == '' or f.startswith(rod + '/')
+                                                for rod in node_roedder)
               rammer = [(nr, l) for nr, l in enumerate(txt.split('\n'), 1)
                         if not kommentar.match(l) and moenster.search(l)]
               if not rammer: continue
