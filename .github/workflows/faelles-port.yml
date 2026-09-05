@@ -27,7 +27,7 @@ on:
 jobs:
   syntaks:
     name: Syntaks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, koadic-vps]
     steps:
       - uses: actions/checkout@v4
 
@@ -67,7 +67,7 @@ jobs:
 
   rester:
     name: Fejlfindingsrester
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, koadic-vps]
     steps:
       - uses: actions/checkout@v4
 
@@ -150,7 +150,7 @@ jobs:
 
   exitkode:
     name: En fejl må ikke se ud som en succes
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, koadic-vps]
     steps:
       - uses: actions/checkout@v4
 
@@ -354,7 +354,7 @@ jobs:
 
   tegnsaet:
     name: Æ, ø og å
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, koadic-vps]
     steps:
       - uses: actions/checkout@v4
 
