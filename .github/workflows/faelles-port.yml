@@ -31,10 +31,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ inputs.php-udgave }}
-          coverage: none
+      - name: Verify runner PHP
+        env:
+          EXPECTED_PHP: ${{ inputs.php-udgave }}
+        run: |
+          set -eu
+          actual=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
+          test "$actual" = "$EXPECTED_PHP" || {
+            echo "::error::Runner PHP $actual does not match required PHP $EXPECTED_PHP"
+            exit 1
+          }
+          php -m | grep -qx pdo_mysql
 
       - name: PHP
         run: |
