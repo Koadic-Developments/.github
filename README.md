@@ -10,6 +10,7 @@ own purpose, setup, configuration, and release process.
 | --- | --- |
 | `CONTRIBUTING.md` | Development, review, and release guidance |
 | `SECURITY.md` | Private vulnerability reporting instructions |
+| `README_STANDARD.md` | Product-specific README structure and accuracy rules |
 | `CODEOWNERS` | Repository ownership rules |
 | `profile/README.md` | Draft organization profile for GitHub |
 | `.github/ISSUE_TEMPLATE/` | Issue templates |
