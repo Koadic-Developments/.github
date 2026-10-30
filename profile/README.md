@@ -1,94 +1,60 @@
+<div align="center">
+
 # Koadic Developments
 
-**Dansk udviklingshus.** Vi bygger og driver Koadics egne systemer — fra medarbejderplatform
-og sikkerhed til CRM, helpdesk og selvhostet AI. Alt kører på egen infrastruktur.
+**Software built for the work around it.**
+
+We are a Danish software development company building products for teams,
+customers, and our own operations. Our work spans web platforms, mobile apps,
+developer tools, customer support, and business systems.
+
+[Website](https://koadic.dk) · [Developer Platform](https://developer.koadic.dk) · [Service status](https://status.koadic.dk) · [Contact](mailto:development@koadic.dk)
+
+</div>
 
 ---
 
-## Hvad vi bygger
+## What we build
 
-### Drift og medarbejdere
-| System | Hvad det gør |
-|---|---|
-| **Medarbejderplatform** | Vagtplan, tidsregistrering, løn, fravær og kontrakter |
-| **Medarbejder-app** | iOS-app til stempling, vagtplan og godkendelser |
-| **Management Panel** | Internt kontrolpanel for produkter, infrastruktur og drift |
+### Products and operations
 
-### Kunder og support
-| System | Hvad det gør |
-|---|---|
-| **CRM** | Kunder, kontrakter og fakturering |
-| **Helpdesk** | Samlet indbakke med mail, telefon og sager |
-| **Kundeportal** | Selvbetjening for Koadics kunder |
-| **Ticketsystem** | Sagsstyring på tværs af produkter |
+- **Koadic Developer Platform** — a workspace for issues, projects, pull
+  requests, agents, and engineering work.
+- **Koadic Workspace** — tools for employee operations, including schedules
+  and time registration.
+- **Koadic Helpdesk and CRM** — customer support and relationship workflows.
+- **Koadic Auth and Security Platform** — shared identity and security
+  components for Koadic systems.
+- **Koadic mobile apps** — mobile access to selected Koadic services.
 
-### Platform
-| System | Hvad det gør |
-|---|---|
-| **Security Platform** | WAF, bot-beskyttelse og angrebsdetektion |
-| **KoaBot** | 100 % selvhostet AI — ingen data forlader vores servere |
-| **Workspace** | Mail, drev, chat og kalender i én app |
-| **API System** | Fælles API-lag på tværs af produkterne |
+Product availability and features vary by service. The linked applications may
+require an account.
 
----
+## How we work
 
-## Sådan arbejder vi
+We aim to make changes understandable and verifiable before release:
 
-**Fra idé til produktion går alt den samme vej:**
-
-```
-issue  →  gren  →  pull request  →  kodekontrol  →  gennemsyn  →  main  →  produktion
+```text
+Issue → focused change → pull request → relevant checks and review
+      → preview or staging → release → production verification
 ```
 
-**Alt starter som et issue.** Hvert issue får en ansvarlig, en type, en prioritet, et område,
-en milepæl og et projekt. Uden dem forsvinder opgaven i bunken — så det sættes automatisk,
-hvis man glemmer det.
+Checks should match the code being changed. Operational monitoring belongs in
+our monitoring platform rather than recurring GitHub Actions jobs. Production
+changes should have a clear owner and a way to recover if the release fails.
 
-**Ingen skriver direkte til `main`.** Grenen er beskyttet: pull request er påkrævet,
-force-push og sletning er slået fra, og alle kommentarer skal være besvaret før merge.
+## Security
 
-**Automatisk kodekontrol.** Hver pull request testes for syntaksfejl og gennemgås, før den når
-produktion. Fejler kontrollen, kan den ikke merges — uanset hvem der har skrevet den.
-Testene kører på vores egen server.
+Security is part of how we design, build, and operate our systems. Please do
+not report vulnerabilities in a public issue. Contact
+[development@koadic.dk](mailto:development@koadic.dk) with a private report.
 
-**Kodeejere.** Ændringer i login, 2FA, løn og udgivelse sender automatisk en anmodning om
-gennemsyn til ledelsen. Det er de steder, hvor en fejl er dyrest.
+## Repositories
 
-**Hemmeligheder slipper ikke ud.** Alle repositories har secret scanning med push-beskyttelse:
-forsøger nogen at sende en API-nøgle eller adgangskode med, bliver det afvist med det samme.
+Our GitHub repositories are currently private. This profile describes the
+organization and its products; it does not imply that source code or internal
+systems are publicly available.
 
-**Selvhostet, hvor det tæller.** AI, database og baggrundsjobs kører på egen infrastruktur.
-Vi køber standardværktøj og bygger selv det, der er vores produkt.
+## Contact
 
----
-
-## Sådan er arbejdet sorteret
-
-| | |
-|---|---|
-| **Projekter** | Ét board per system — Medarbejderplatform, Security Platform, KoaBot og så videre |
-| **Typer** | Opgave · Fejl · Ny funktion |
-| **Prioritet** | Haster · Høj · Normal · Lav |
-| **Områder** | Sikkerhed · Design · Database · API · App · Drift · Dokumentation |
-| **Milepæle** | Større leverancer, fx Vagtplan 2.0 — plus Drift og vedligehold til det løbende |
-
----
-
-## Roller
-
-| Team | Adgang |
-|---|---|
-| **Ledelse** | Fuld kontrol over repositories og indstillinger |
-| **Udviklere** | Kan pushe til feature-branches og oprette pull requests |
-| **Gennemsyn** | Læser kode og godkender pull requests |
-| **Læseadgang** | Kun læseadgang — revisorer og eksterne samarbejdspartnere |
-
----
-
-## Kontakt
-
-**Web** · [koadic.dk](https://koadic.dk)
-**Udvikling** · development@koadic.dk
-**Sikkerhed** · Fundet et sikkerhedsproblem? Skriv til development@koadic.dk — vi svarer hurtigt.
-
-<sub>Alle repositories er private. Koadic Developments · Danmark</sub>
+[koadic.dk](https://koadic.dk) · [development@koadic.dk](mailto:development@koadic.dk)

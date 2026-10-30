@@ -1,55 +1,32 @@
-# Sikkerhedspolitik
+# Security policy
 
-Gælder **alle** Koadic-repoer. GitHub viser den her fil på ethvert repo, der
-ikke har sin egen — så en ny sikkerhedskontakt skrives ét sted, ikke syvogtredive.
+## Report a vulnerability
 
-## Rapportér en sårbarhed
+Please report suspected security vulnerabilities privately to
+[development@koadic.dk](mailto:development@koadic.dk). Do not include real
+customer data, passwords, API keys, or other secrets in the report. Share the
+affected product, the steps needed to reproduce the issue, and its possible
+impact. We will acknowledge the report and coordinate next steps.
 
-**kontakt@koadic.dk** — ikke via et offentligt Issue.
+Please do not test against systems or accounts you do not own or have explicit
+permission to assess. Do not access, change, or retain other users' data.
 
-Skriv hvad du fandt, hvordan det kan gentages, og hvad du mener konsekvensen
-er. Du får svar inden for to hverdage.
+## Scope
 
-Er du i tvivl om, hvorvidt noget tæller som en sårbarhed: send det. Det er
-billigere for os at læse en mail for meget end at opdage det samme et halvt år
-senere.
+Report vulnerabilities in Koadic products and services, including
+[koadic.dk](https://koadic.dk),
+[auth.koadic.dk](https://auth.koadic.dk),
+[workspace.koadic.dk](https://workspace.koadic.dk),
+[developer.koadic.dk](https://developer.koadic.dk), and related Koadic services.
 
-## Hvad der er i scope
+Pull request preview hosts are temporary development environments. Reports
+about them are still welcome, but clearly identify the preview URL and pull
+request if known.
 
-| System | Adresse |
-|---|---|
-| Koadic | koadic.dk |
-| Login | auth.koadic.dk |
-| Medarbejderplatform | medarbejder.koadic.dk · workspace.koadic.dk |
-| Portal | portal.koadic.dk |
-| CRM | crm.koadic.dk |
-| Helpdesk | helpdesk.koadic.dk |
-| Fakturering | faktura.koadic.dk |
-| Driftsstatus | status.koadic.dk |
-| Designsystem | design.koadic.dk |
-| Kundeudkast | vis.koadic.dk |
-| Sikkerhedsplatform | security.koadic.dk |
+## Response
 
-**Ikke i scope:** `pr-*-*.koadic.dk`. Det er forhåndsvisninger af åbne pull
-requests — kode, der endnu ikke er gennemgået. Fund der kun gælder dem, er
-interessante for os internt, men de er ikke en sårbarhed i drift.
+We will review reports and respond as soon as practical. Please allow us time
+to investigate and address a confirmed issue before sharing details publicly.
 
-## Hvad vi beder om
-
-- **Ingen automatiserede scannere** mod produktionen. De vælter en lille
-  opsætning, og vi kan ikke skelne dem fra et angreb.
-- **Rør ikke data, der ikke er dine.** Har du adgang til noget, du ikke burde,
-  så stop dér og skriv — vi tror på dig.
-- **Giv os tid til at rette**, før det bliver offentligt.
-
-## Hvad vi gør selv
-
-- Alle repoer kræver en pull request til `main`, også for ejeren
-- CI skal være grøn før merge — se `CONTRIBUTING.md`
-- Dependabot holder øje med afhængigheder
-- To-faktor er påkrævet for alle i organisationen
-- Hemmeligheder ligger i `/etc/*.env` på serveren, ejet af root. De står
-  aldrig i git, og udrulningen kan ikke læse dem
-
----
-© 2026 Koadic Developments
+This policy describes the reporting process. It does not promise a particular
+response time, reward, or service-level agreement.

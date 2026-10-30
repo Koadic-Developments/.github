@@ -1,46 +1,42 @@
-# .github
+# Koadic organization standards
 
-Fælles skabeloner, retningslinjer og workflows for **alle** Koadic-repoer.
+This repository holds shared guidance and templates for Koadic Developments.
+It is not a product repository. Each product repository should document its
+own purpose, setup, configuration, and release process.
 
-## Hvad der ligger her
+## Contents
 
-| Fil | Hvad den gør |
-|---|---|
-| `CONTRIBUTING.md` | de seks trin fra ændring til kunde |
-| `SECURITY.md` | hvor sårbarheder meldes |
-| `CODEOWNERS` | hvem der ejer hvad |
-| `profile/README.md` | organisationens forside på GitHub |
-| `.github/ISSUE_TEMPLATE/` | fejl, funktion, opgave |
-| `.github/PULL_REQUEST_TEMPLATE.md` | spørgsmålene, en PR skal svare på |
+| Path | Purpose |
+| --- | --- |
+| `CONTRIBUTING.md` | Development, review, and release guidance |
+| `SECURITY.md` | Private vulnerability reporting instructions |
+| `CODEOWNERS` | Repository ownership rules |
+| `profile/README.md` | Draft organization profile for GitHub |
+| `.github/ISSUE_TEMPLATE/` | Issue templates |
+| `.github/PULL_REQUEST_TEMPLATE.md` | Pull request checklist |
+| `.github/workflows/` | Shared CI and preview workflows |
 
-## Fælles workflows
+## Shared workflows
 
-To workflows kaldes fra de andre repoer, så reglerne kun står ét sted:
+Other repositories can call the reusable workflows in this repository. These
+are event-driven workflows, not recurring uptime or drift checks. The
+`faelles-port.yml` workflow provides the shared PHP and shell checks. The
+`forhaandsvisning.yml` workflow manages an isolated pull request preview for
+repositories configured to use it.
 
 ```yaml
 jobs:
   port:
     uses: Koadic-Developments/.github/.github/workflows/faelles-port.yml@main
-
-  forhaandsvisning:
-    uses: Koadic-Developments/.github/.github/workflows/forhaandsvisning.yml@main
-    with:
-      system: design
 ```
 
-| Workflow | Hvad |
-|---|---|
-| `faelles-port.yml` | syntaks, fejlfindingsrester, `exit('tekst')`, UTF-8 |
-| `forhaandsvisning.yml` | `pr-<n>-<system>.koadic.dk` pr. åben PR |
+Callers should choose checks that fit their language and runtime. Do not add
+scheduled operational monitoring to GitHub Actions; use the existing
+monitoring service for that purpose.
 
-## Bemærk: repoet er privat
+## Visibility
 
-GitHub bruger kun en fælles `SECURITY.md` og `CONTRIBUTING.md` fra `.github`,
-**hvis det repo er offentligt**. Vores er privat, så filerne her gælder ikke
-automatisk de andre repoer — de har hver deres kopi.
-
-Gøres repoet offentligt en dag, kan de kopier fjernes igen. Workflows virker
-uanset, fordi adgangen er sat til organisationen.
-
----
-© 2026 Koadic Developments
+This repository is currently private. GitHub does not publish
+`profile/README.md` as the organization profile while this repository is
+private. The profile draft must be reviewed alongside repository contents and
+workflow security before changing visibility.
