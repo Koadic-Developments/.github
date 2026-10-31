@@ -1,89 +1,85 @@
-# Sådan ændrer vi noget
+# Engineering at Koadic
 
-Gælder alle Koadic-repoer. Seks trin, ingen genveje — hvert trin fanger noget,
-det forrige ikke kan.
+This guide describes how a change moves from an idea to production. It is a
+practical, lightweight version of a Secure Development Lifecycle (SDL) and a
+Safe Deployment Process (SDP). The safeguards should match the risk of the
+change; routine work should not create unnecessary CI or monitoring noise.
 
-Trinnene er ikke skrevet ud fra en lærebog. Hver enkelt står der, fordi noget
-gik galt uden den.
+## 1. Define the change
 
----
+Before implementation, record the user problem, expected result, affected
+systems, acceptance criteria, and any data, access, privacy, or availability
+risks. For small fixes, a concise issue or pull request description is enough.
+For changes that affect authentication, payroll, personal data, permissions,
+or production infrastructure, document the design and rollback path before
+implementation.
 
-## 1 · Aldrig direkte på `main`
+## 2. Make the change in a branch
 
-Enhver ændring starter som en gren. Navnet siger **hvad**, ikke hvem:
+Create a focused branch from `main` and keep the pull request limited to one
+related change. Never put credentials, personal data, or production exports in
+Git. Use least-privilege credentials and validate untrusted input at the
+boundary where it enters the system.
 
-```
-kds/soeg-efter-kunden      ja
-adam-fix                   nej
-```
+## 3. Open a pull request and review evidence
 
-Om et halvt år er det grenens navn, der står i historikken.
+The pull request should explain what changed, why, how it was checked, and how
+to deploy or roll back. Reviewers should focus on behavior, security, data
+handling, accessibility where relevant, and unintended effects on other
+systems.
 
-## 2 · Vagtposten før koden
+Repository-specific PR checks should run when a pull request is opened or
+updated. Keep checks relevant to the changed code, such as syntax, typecheck,
+build, focused tests, secret scanning, or dependency review. Do not add
+scheduled uptime checks or recurring drift scans to GitHub Actions. Production
+service monitoring belongs in the existing Better Stack setup.
 
-Retter du en fejl, så skriv først prøven, der fanger den — og **se den fejle**.
-En prøve, der aldrig har været rød, beviser ingenting.
+Required checks must report on the latest commit. A green check is evidence
+only for what that check actually ran; it does not prove a deployment or a
+working production flow.
 
-Det er den enkeltregel, der har fanget mest i huset:
+## 4. Verify in preview or staging
 
-- et nøglemønster, der slap et linjeskift igennem, fordi `$` i PHP matcher
-  lige før et afsluttende `\n` — `"1234567890\n"` blev til en filsti
-- en knap, der var sort på sort i ét tema; prøven fandt straks to temaer mere,
-  som ikke kunne ses med det blotte øje
-- en prøveløkke, der meldte alt grønt, fordi `$(basename $t)` nulstillede
-  statuskoden, før den blev læst. Fire prøver fejlede.
+For user-facing or production-sensitive changes, deploy to an isolated preview
+or staging environment and verify the affected flow there. Confirm the
+environment, data source, and configuration are the intended ones. Record the
+result and any limitations in the pull request. Documentation-only changes do
+not need a product preview.
 
-## 3 · PR med en begrundelse, ikke en liste
+## 5. Approve and release
 
-Teksten skal svare på **hvorfor**, og hvad der blev målt.
+After the PR checks and review evidence are satisfactory, merge the change
+through the repository's protected-branch process. Production releases should
+be a distinct step from merging. A release owner confirms the target, impact,
+deployment order, and rollback plan before a high-impact change goes live.
 
-> «Rettede knappen» er ikke en PR-tekst.
-> «Knappen var sort på sort i Avis; prøven fandt to temaer mere, jeg ikke kunne
-> se med øjet» er.
+Where a system supports it, release first to an internal or limited group,
+observe it, then expand the rollout. Small systems without release rings can
+use a staging check followed by an explicit production release and a short
+post-deploy verification.
 
-Skabelonen står i `.github/PULL_REQUEST_TEMPLATE.md` og udfyldes automatisk.
+## 6. Verify and learn
 
-## 4 · CI skal være grøn — og grøn skal betyde noget
+After deployment, verify the changed flow in the real target environment and
+check the relevant Better Stack service or incident view. For an incident,
+record impact, cause, mitigation, and a follow-up action. Avoid adding
+duplicate polling jobs to GitHub Actions when an existing monitor or heartbeat
+can cover the need.
 
-Et trin, der ikke kan fejle, er ikke et tjek.
+## Pull request checklist
 
-Vi har haft en udrulning, der stod grøn, mens systemet var rødt: den ledte
-efter `"ok": true` i et svar, hvor de enkelte deltjek også indeholdt den
-tekstbid. Og en prøve, der bestod i CI og fatalede på serveren, fordi CI's PHP
-har `dom` og serverens ikke.
+- [ ] The change and expected behavior are clear.
+- [ ] Relevant PR checks passed, or the reason a check does not apply is stated.
+- [ ] Security, privacy, access, and data effects were considered.
+- [ ] Preview or staging verification is recorded when the change needs it.
+- [ ] Deployment order and rollback are documented for production-sensitive changes.
+- [ ] Production verification is planned and has an owner.
 
-**Skriver du et nyt tjek: bryd koden med vilje og se det fange det.**
+## Review model
 
-## 5 · Se det køre, før du merger
-
-Grøn CI er ikke «det virker».
-
-- CI kører en anden PHP end serveren. VPS'en har hverken `dom` eller `xml`.
-- En `.gitignore`d fil når aldrig serveren, uanset hvor grønt bygget var.
-- En rettelse i et ark, der ikke er `<link>`et ind, fejler fuldstændig tavst.
-
-Åbn siden. Klik på knappen.
-
-## 6 · Merge, udrul — og hent filen tilbage
-
-Efter udrulningen: hent den fil, du ændrede, **fra serveren**, og se at den er
-din.
-
-Grøn udrulning betyder ikke «ude». Det har kostet huset en forkert
-sikkerhedskonklusion én gang: koden var merget, deployet var grønt, og den
-gamle fil lå der stadig.
-
----
-
-## Hvad der er spærret automatisk
-
-| Regel | Håndhæves af |
-|---|---|
-| Ingen direkte push til `main` | Grenbeskyttelse på GitHub |
-| CI skal være grøn før merge | Påkrævede status-tjek |
-| PR-teksten stiller de rigtige spørgsmål | `PULL_REQUEST_TEMPLATE.md` |
-| Issues får ansvarlig, label og milepæl | `.github/workflows/tildel-issues.yml` |
-
-Godkendelse fra en anden person er **ikke** påkrævet. Vi er tre, og et sådant
-krav ville betyde, at en hasterettelse en lørdag ikke kan udrulles.
-Spærringen er mod utilsigtede pushes, ikke mod hinanden.
+Code review and release approval serve different purposes. A code reviewer
+checks the proposed change. A release owner decides whether and when the
+verified change should reach production. Require an independent reviewer for
+high-risk changes when one is available. Do not make a second-person approval
+a blanket requirement if the team cannot reliably provide it; record the risk
+and use a release checklist instead.
