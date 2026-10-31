@@ -1,60 +1,30 @@
-<div align="center">
-
 # Koadic Developments
 
-**Software built for the work around it.**
+**A Danish software company building and operating products for people and teams.**
 
-We are a Danish software development company building products for teams,
-customers, and our own operations. Our work spans web platforms, mobile apps,
-developer tools, customer support, and business systems.
-
-[Website](https://koadic.dk) · [Developer Platform](https://developer.koadic.dk) · [Service status](https://status.koadic.dk) · [Contact](mailto:development@koadic.dk)
-
-</div>
-
----
+We develop software across workforce operations, customer service, engineering workflows, and the platform services that connect them.
 
 ## What we build
 
-### Products and operations
-
-- **Koadic Developer Platform** — a workspace for issues, projects, pull
-  requests, agents, and engineering work.
-- **Koadic Workspace** — tools for employee operations, including schedules
-  and time registration.
-- **Koadic Helpdesk and CRM** — customer support and relationship workflows.
-- **Koadic Auth and Security Platform** — shared identity and security
-  components for Koadic systems.
-- **Koadic mobile apps** — mobile access to selected Koadic services.
-
-Product availability and features vary by service. The linked applications may
-require an account.
+| Area | Products |
+| --- | --- |
+| Workforce | Koadic Workspace for scheduling, time registration, HR workflows, and employee tools |
+| Engineering | Koadic Developer Platform, Koadic's deployment of [Multica](https://github.com/multica-ai/multica), with issue-based agent workflows |
+| Customer operations | CRM, Helpdesk, customer portal, invoicing, and support tools |
+| Platform services | Shared authentication, APIs, security controls, staging, and service status |
+| Mobile | iOS apps for employee and customer workflows |
 
 ## How we work
 
-We aim to make changes understandable and verifiable before release:
+Changes start with a clear problem and move through a focused branch and pull request. Project-specific checks run before merge, and production changes include verification suited to their risk. Security, privacy, access control, and rollback are considered when a change can affect customer or employee data.
 
-```text
-Issue → focused change → pull request → relevant checks and review
-      → preview or staging → release → production verification
-```
-
-Checks should match the code being changed. Operational monitoring belongs in
-our monitoring platform rather than recurring GitHub Actions jobs. Production
-changes should have a clear owner and a way to recover if the release fails.
-
-## Security
-
-Security is part of how we design, build, and operate our systems. Please do
-not report vulnerabilities in a public issue. Contact
-[development@koadic.dk](mailto:development@koadic.dk) with a private report.
+We keep automated checks relevant to each repository. GitHub Actions is used for pull-request and release workflows; recurring availability monitoring belongs in service monitoring, not scheduled Actions jobs.
 
 ## Repositories
 
-Our GitHub repositories are currently private. This profile describes the
-organization and its products; it does not imply that source code or internal
-systems are publicly available.
+Our source repositories are private. This profile describes the products and engineering approach without publishing internal source code or operational configuration.
 
 ## Contact
 
-[koadic.dk](https://koadic.dk) · [development@koadic.dk](mailto:development@koadic.dk)
+- Website: [koadic.dk](https://koadic.dk)
+- Development: [development@koadic.dk](mailto:development@koadic.dk)
