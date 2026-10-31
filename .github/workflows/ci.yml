@@ -2,16 +2,19 @@ name: Test
 
 # Kører på hver pull request mod main — INTET må merges uden at bestå.
 # Det er kontrollen, der forhindrer at ødelagt kode når produktion.
-# Kører på Koadics egen VPS-runner, så den ikke bruger af Actions-kvoten.
+# Use a GitHub-hosted runner so fork pull requests never execute on the Koadic VPS.
 on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Kodekontrol
-    runs-on: [self-hosted, koadic-vps]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
@@ -19,6 +22,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
 
       - name: PHP-syntakstjek af ændrede filer
         run: |

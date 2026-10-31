@@ -31,12 +31,12 @@ on:
 
 jobs:
   udrul:
+    if: github.repository_owner == 'Koadic-Developments' && github.event.action != 'closed'
     # Kun paa VPS'en. Den har mappen, Caddy og PHP-FPM.
     runs-on: [self-hosted, koadic-vps]
     permissions:
       contents: read
       pull-requests: write
-    if: github.event.action != 'closed'
     steps:
       - uses: actions/checkout@v4
 
@@ -171,8 +171,8 @@ jobs:
           esac
 
   ryd-op:
+    if: github.repository_owner == 'Koadic-Developments' && github.event.action == 'closed'
     runs-on: [self-hosted, koadic-vps]
-    if: github.event.action == 'closed'
     steps:
       - name: Fjern forhaandsvisningen
         env:
