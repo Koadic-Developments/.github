@@ -1,40 +1,25 @@
-<!--
-Husk før du opretter:
-  Ansvarlig · Label · Type · Milepæl · Projekt
-Alle fem felter sættes i højre side. Et issue eller en PR uden dem bliver væk.
--->
+## Change
 
-### Hvad ændrer denne PR
+<!-- What changes for users or operators? -->
 
-<!-- Kort og i klar tekst. Hvad kan systemet nu, som det ikke kunne før? -->
+## Reason
 
-### Hvorfor
-
-<!-- Hvilket problem løser det? Link til issuet: Closes #  -->
+<!-- What problem does this solve? Link the issue when relevant. -->
 
 Closes #
 
-### Sådan er det testet
+## Verification
 
-<!-- Hvad har du konkret kørt eller klikket dig igennem? Skriv resultatet, ikke kun at du testede. -->
+<!-- List the checks actually run and their results. Do not claim a deploy from a green CI run. -->
 
-- [ ] Kodekontrollen er grøn
-- [ ] Testet lokalt eller på staging
-- [ ] Ingen ændringer i konfiguration eller database der mangler at blive kørt
-- [ ] Har jeg skrevet en ny prøve: har jeg set den **fejle**, før den blev grøn?
-- [ ] Har jeg **åbnet siden** — ikke kun set CI være grøn?
+- [ ] Relevant pull request checks passed, or non-applicable checks are explained.
+- [ ] Preview/staging was checked when appropriate; evidence is included.
+- [ ] Security, privacy, access, and data impact were considered.
 
-<!--
-De to sidste er ikke pynt. Grøn CI beviser noget om CI's maskine, ikke om
-serverens: VPS'en kører PHP uden dom og xml, og en gitignoreret fil når aldrig
-derover. Og en prøve, der aldrig har været rød, beviser ingenting.
-Se CONTRIBUTING.md, trin 2 og 5.
--->
+## Release and recovery
 
-### Skal der gøres noget efter merge
+<!-- Deployment order, production verification owner, and rollback. Write "not applicable" for docs-only changes. -->
 
-<!-- Migration, cron, indstilling, deploy-rækkefølge — eller "nej". -->
+## Screenshots
 
-### Skærmbilleder
-
-<!-- Ved ændringer i brugerfladen: før og efter. -->
+<!-- Include before/after screenshots for UI changes. -->
