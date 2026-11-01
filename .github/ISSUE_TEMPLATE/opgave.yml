@@ -1,61 +1,28 @@
-name: Opgave
-description: Et stykke arbejde der skal laves
-type: Task
-labels: ["prioritet: normal"]
-assignees: ["MrKoadic"]
+name: Propose a documentation task
+description: Suggest a specific task to improve this public repository.
+title: "[Task]: "
 body:
-  - type: textarea
-    id: hvad
+  - type: markdown
     attributes:
-      label: Hvad skal der laves
-      description: Beskriv opgaven, som du ville forklare den til en kollega.
-      placeholder: Tidsregistreringssiden skal kunne vise afvigelser mellem planlagt og faktisk tid.
+      value: |
+        This repository hosts the public organization profile and shared guidance. Do not use this form for internal product work or support.
+  - type: textarea
+    id: task
+    attributes:
+      label: What should be done?
+      description: State the expected result clearly.
     validations:
       required: true
-
   - type: textarea
-    id: hvorfor
+    id: reason
     attributes:
-      label: Hvorfor
-      description: Hvad er problemet i dag, eller hvad bliver bedre bagefter?
-    validations:
-      required: false
-
-  - type: dropdown
-    id: omraade
-    attributes:
-      label: Område
-      description: Hvor i systemet hører opgaven til?
-      options:
-        - Sikkerhed
-        - Design
-        - Database
-        - API
-        - App
-        - Drift
-        - Dokumentation
-        - Andet
+      label: Why is this useful?
     validations:
       required: true
-
-  - type: dropdown
-    id: prioritet
-    attributes:
-      label: Prioritet
-      options:
-        - Haster — noget er i stykker i produktion
-        - Høj — tages før almindelige opgaver
-        - Normal
-        - Lav — nice to have
-      default: 2
-    validations:
-      required: true
-
   - type: textarea
-    id: faerdig
+    id: acceptance
     attributes:
-      label: Færdig når
-      description: Hvornår er opgaven løst? Skriv det som en tjekliste.
+      label: How will we know it is complete?
       value: |
         - [ ]
         - [ ]

@@ -60,11 +60,10 @@ post-deploy verification.
 
 ## 6. Verify and learn
 
-After deployment, verify the changed flow in the real target environment and
-check the relevant Better Stack service or incident view. For an incident,
-record impact, cause, mitigation, and a follow-up action. Avoid adding
-duplicate polling jobs to GitHub Actions when an existing monitor or heartbeat
-can cover the need.
+After deployment, verify the changed flow in the target environment and check
+the approved service-monitoring view. For an incident, record impact, cause,
+mitigation, and a follow-up action. Avoid duplicate polling jobs in GitHub
+Actions when service monitoring already covers the need.
 
 ## Pull request checklist
 
