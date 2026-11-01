@@ -1,43 +1,44 @@
-# Koadic organization standards
+# Koadic Developments
 
-This repository holds shared guidance and templates for Koadic Developments.
-It is not a product repository. Each product repository should document its
-own purpose, setup, configuration, and release process.
+![Koadic Developments: software for teams](profile/assets/koadic-social-preview.png)
 
-## Contents
+**We build software that helps teams do their work with clarity and confidence.**
+
+This repository contains the public organization profile, community guidance, and engineering standards for Koadic Developments. It is a profile and standards repository, not a product source repository. Most Koadic product source code is private.
+
+## Engineering standards
+
+- Work starts from a clear user or operational problem.
+- Pull requests stay focused and include evidence of relevant checks.
+- Security, privacy, accessibility, and data handling are considered according to risk.
+- A merge is separate from a production release. Releases need appropriate verification and a recovery path.
+- Automated checks should provide useful signal without duplicating service monitoring.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md), [README_STANDARD.md](README_STANDARD.md), and [README_TEMPLATE.md](README_TEMPLATE.md).
+
+## Community and security
+
+- [Report a security concern](SECURITY.md). Please use the private reporting route in that policy.
+- Use the issue forms for feedback about this public profile and repository.
+- For product support, use the contact route on [koadic.dk](https://koadic.dk).
+
+## Repository contents
 
 | Path | Purpose |
 | --- | --- |
-| `CONTRIBUTING.md` | Development, review, and release guidance |
-| `SECURITY.md` | Private vulnerability reporting instructions |
-| `README_STANDARD.md` | Product-specific README structure and accuracy rules |
-| `CODEOWNERS` | Repository ownership rules |
-| `profile/README.md` | Draft organization profile for GitHub |
-| `.github/ISSUE_TEMPLATE/` | Issue templates |
+| `profile/README.md` | Organization profile shown on GitHub |
+| `profile/assets/` | Profile banner and brand assets |
+| `CONTRIBUTING.md` | Contribution and release guidance |
+| `SECURITY.md` | Vulnerability reporting policy |
+| `README_STANDARD.md` | Guidance for accurate product READMEs |
+| `README_TEMPLATE.md` | Copyable project README outline |
+| `.github/ISSUE_TEMPLATE/` | Feedback forms |
 | `.github/PULL_REQUEST_TEMPLATE.md` | Pull request checklist |
-| `.github/workflows/` | Shared CI and preview workflows |
+| `.github/workflows/` | Repository automation and shared checks |
 
-## Shared workflows
+Koadic materials are published here for visibility and reference. Unless a file is accompanied by an explicit license, this repository does not grant permission to reuse its contents.
 
-Other repositories can call the reusable workflows in this repository. These
-are event-driven workflows, not recurring uptime or drift checks. The
-`faelles-port.yml` workflow provides the shared PHP and shell checks. The
-`forhaandsvisning.yml` workflow manages an isolated pull request preview for
-repositories configured to use it.
+## Contact
 
-```yaml
-jobs:
-  port:
-    uses: Koadic-Developments/.github/.github/workflows/faelles-port.yml@main
-```
-
-Callers should choose checks that fit their language and runtime. Do not add
-scheduled operational monitoring to GitHub Actions; use the existing
-monitoring service for that purpose.
-
-## Visibility
-
-This repository is currently private. GitHub does not publish
-`profile/README.md` as the organization profile while this repository is
-private. The profile draft must be reviewed alongside repository contents and
-workflow security before changing visibility.
+- Website: [koadic.dk](https://koadic.dk)
+- Development: [development@koadic.dk](mailto:development@koadic.dk)
