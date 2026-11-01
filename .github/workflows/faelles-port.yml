@@ -26,6 +26,7 @@ on:
 
 jobs:
   syntaks:
+    if: github.repository_owner == 'Koadic-Developments'
     name: Syntaks
     runs-on: [self-hosted, koadic-vps]
     steps:
@@ -73,6 +74,7 @@ jobs:
           [ "$f" -eq 0 ]
 
   rester:
+    if: github.repository_owner == 'Koadic-Developments'
     name: Fejlfindingsrester
     runs-on: [self-hosted, koadic-vps]
     steps:
@@ -156,6 +158,7 @@ jobs:
           PYKODE
 
   exitkode:
+    if: github.repository_owner == 'Koadic-Developments'
     name: En fejl må ikke se ud som en succes
     runs-on: [self-hosted, koadic-vps]
     steps:
@@ -360,6 +363,7 @@ jobs:
           PYKODE
 
   tegnsaet:
+    if: github.repository_owner == 'Koadic-Developments'
     name: Æ, ø og å
     runs-on: [self-hosted, koadic-vps]
     steps:
