@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title description">
+  <title id="title">Koadic Developments</title>
+  <desc id="description">Software for teams. Built with care.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14172a"/>
+      <stop offset="0.56" stop-color="#202950"/>
+      <stop offset="1" stop-color="#34236e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#4361ee"/>
+      <stop offset="1" stop-color="#7b2fbe"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.9" cy="0.1" r="0.8">
+      <stop offset="0" stop-color="#6078ff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#6078ff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="640" fill="url(#background)"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+  <circle cx="1080" cy="100" r="270" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="1"/>
+  <circle cx="1080" cy="100" r="205" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+  <circle cx="1080" cy="100" r="140" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+  <path d="M0 550C220 465 340 655 570 555S960 430 1280 530" fill="none" stroke="url(#accent)" stroke-opacity="0.72" stroke-width="2"/>
+  <path d="M0 584C235 495 350 690 590 585S965 468 1280 565" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1"/>
+  <g transform="translate(102 155) scale(.43)">
+    <path d="M 299 575 L 113 741 L 299 741 Z M 320 543 L 476 739 L 480 741 L 643 741 L 653 733 L 655 724 L 651 714 L 432 442 Z M 703 131 L 518 131 L 499 135 L 479 147 L 275 344 L 274 540 Z M 240 80 L 229 84 L 97 170 L 86 183 L 81 197 L 80 726 L 229 591 L 238 576 L 242 563 L 243 84 Z" fill="#ffffff" fill-rule="evenodd"/>
+  </g>
+  <rect x="475" y="196" width="72" height="5" rx="2.5" fill="url(#accent)"/>
+  <text x="475" y="277" fill="#ffffff" font-family="Inter, SF Pro Display, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="-1.6">Koadic Developments</text>
+  <text x="478" y="333" fill="#d8def2" font-family="Inter, SF Pro Text, Helvetica, Arial, sans-serif" font-size="27" font-weight="400" letter-spacing="0.2">Software for teams. Built with care.</text>
+  <text x="478" y="417" fill="#aeb9dc" font-family="Inter, SF Pro Text, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="3.2">WORKFORCE · DEVELOPER TOOLS · CUSTOMER OPERATIONS</text>
+</svg>

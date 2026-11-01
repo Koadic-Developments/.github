@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Sikkerhedsproblem
+  - name: Report a security vulnerability
     url: mailto:development@koadic.dk
-    about: Fundet et sikkerhedshul? Skriv direkte i stedet for at oprette et offentligt issue.
-  - name: Support til et Koadic-produkt
+    about: Send security reports privately. Do not create a public issue.
+  - name: Koadic product support
     url: https://koadic.dk
-    about: Er du kunde og har brug for hjælp, så gå gennem supporten i stedet.
+    about: GitHub issues are not a support channel for Koadic products.

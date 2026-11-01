@@ -1,45 +1,28 @@
-name: Ny funktion
-description: En idé til noget systemet ikke kan i dag
-type: Feature
-labels: ["prioritet: lav"]
-assignees: ["MrKoadic"]
+name: Suggest an improvement
+description: Suggest an improvement to the public organization profile or shared documentation.
+title: "[Suggestion]: "
 body:
-  - type: textarea
-    id: idé
+  - type: markdown
     attributes:
-      label: Idéen
-      description: Hvad skal systemet kunne?
-    validations:
-      required: true
-
+      value: |
+        Use this form for this repository only. Product requests and support should go through [koadic.dk](https://koadic.dk). Do not include confidential or personal information.
   - type: textarea
     id: problem
     attributes:
-      label: Hvilket problem løser det
-      description: Hvad gør vi i dag i stedet, og hvorfor er det besværligt?
+      label: What problem should this solve?
+      description: Describe the current difficulty and who it affects.
     validations:
       required: true
-
-  - type: dropdown
-    id: omraade
-    attributes:
-      label: Område
-      options:
-        - Sikkerhed
-        - Design
-        - Database
-        - API
-        - App
-        - Drift
-        - Dokumentation
-        - Andet
-    validations:
-      required: true
-
   - type: textarea
-    id: noter
+    id: proposal
     attributes:
-      label: Noter
-      description: Skitser, eksempler fra andre systemer, eller ting der skal tænkes med.
+      label: What would you change?
+      description: Describe the improvement you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or examples
     validations:
       required: false

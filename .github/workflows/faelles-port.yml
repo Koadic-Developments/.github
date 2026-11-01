@@ -1,18 +1,5 @@
-# ══ HUSETS PORT ══
-#
-# Definér tjekkene ÉT sted, kald dem fra hvert repo. Uden det driver reglerne
-# fra hinanden: fem repoer får en ny kontrol, de andre tredive gør ikke, og
-# ingen opdager det, før noget slipper igennem i et af dem.
-#
-# Sådan kaldes den:
-#
-#     jobs:
-#       port:
-#         uses: Koadic-Developments/.github/.github/workflows/faelles-port.yml@main
-#
-# HVERT TJEK HERUNDER STÅR DER, FORDI NOGET SLAP IGENNEM UDEN DET.
-# Se CONTRIBUTING.md. Tilføj gerne flere — men skriv hvorfor, ellers fjerner
-# den næste dem igen som støj.
+# Shared pull request quality checks for repositories maintained by Koadic Developments.
+# Call this workflow from a repository-specific workflow and keep checks relevant to the codebase.
 
 name: Husets port
 
@@ -47,12 +34,7 @@ jobs:
       - name: PHP
         run: |
           set -uo pipefail
-          # «core.quotePath=false». Uden den saetter git ANFOERSELSTEGN om stier
-          # med aeoeaa: app/hr/"frav\303\246r.php". php -l fik saa et filnavn
-          # MED citationstegn i, fandt ingen fil, og meldte det som en
-          # syntaksfejl. To repoer blev udhaengt for fejl, de ikke havde.
-          #
-          # Huset skriver dansk i filnavne. Saa skal vaerktoejet kunne laese dem.
+          # Preserve UTF-8 filenames so PHP lint receives the actual path.
           n=0; f=0
           while IFS= read -r x; do
             n=$((n+1))
@@ -82,19 +64,8 @@ jobs:
 
       - name: var_dump, dd, console.log
         run: |
-          # PRØVER OG VÆRKTØJER MÅ GERNE SKRIVE UD — det er deres arbejde.
-          # Det er driftskoden, der ikke må.
-          #
-          # Første udgave af det her tjek talte forkert: «if grep … | head -2»
-          # er altid sand, fordi det er HEADs statuskode, der læses. Den meldte
-          # 24 filer med rester i et repo, der ikke har nogen.
-          #
-          # ══ OG EN NODE-TJENESTES STDOUT ER DENS LOG ══
-          #
-          # console.log i browser-JS havner i BRUGERENS konsol — det er en rest.
-          # I en Node-tjeneste er stdout selve logvejen; systemd og journald
-          # fanger den. Edges «listening on :8080» er tjenestens livstegn, ikke
-          # en glemt fejlfinding, og porten stod rød på den i to døgn.
+          # Ignore test tooling. Distinguish browser debugging from intentional
+          # stdout logging in Node services.
           python3 - <<'PYKODE'
           import os, re, subprocess, sys
 
@@ -106,29 +77,12 @@ jobs:
           moenster = re.compile(r'(?<![A-Za-z_$>])(var_dump|print_r|console\.log)\s*\(|(?<![A-Za-z_])debugger\s*;')
           kommentar = re.compile(r'^\s*(//|\*|#|/\*)')
 
-          # ── EN NODE-TJENESTES STDOUT ER DENS LOG ────────────────────────────────────
-          #
-          # console.log i browser-JS havner i BRUGERENS konsol — det er en rest. I en
-          # Node-tjeneste er stdout selve logvejen; systemd og journald fanger den. Edges
-          # «listening on :8080» er ikke en glemt fejlfinding, det er tjenestens
-          # livstegn, og uden den ved man ikke, om den kom op.
-          #
-          # Skellet maales, ikke gaettes: filen ligger under et repoets
-          # package.json OG roerer aldrig document/window. Et Node-modul kan
-          # godt have browserkode i en tekststreng, saa indholdet alene er ikke
-          # nok til at afgore, hvad filen er.
+          # Treat stdout in server-side Node modules as application logging.
           node_tegn = re.compile(r'^#!.*\bnode\b|\bmodule\.exports\b|\brequire\s*\(|'
                                  r'\bprocess\.(env|argv|exit)\b', re.M)
 
-          # Skellet er STIEN, ikke indholdet.
-          #
-          # Foerste forsoeg vetoede paa «document.» og «window.» i filen. Det virkede
-          # ikke: Edges server.js er en Node-tjeneste, der UDSENDER HTML med browser-JS
-          # i skabelonstrenge. «document.getElementById» staar altsaa i en tekststreng,
-          # ikke i kode, og filen blev fejlagtigt regnet for browser-kode.
-          #
-          # Det, der afgoer sagen, er, om filen leveres til en browser — og det siger
-          # stien. Huset lægger browser-JS under assets/, public/, static/ og www/.
+          # Use file location to identify browser-delivered JavaScript. Server
+          # templates may contain browser code as strings.
           BROWSER_STIER = ('assets/', 'public/', 'static/', 'www/', 'dist/')
 
           fund, node_filer = [], []
@@ -166,34 +120,8 @@ jobs:
 
       - name: exit med en tekst, hvor koden bliver laest
         run: |
-          # exit('tekst') og die('tekst') afslutter med kode NUL. Det er kun en
-          # fejl, hvis NOGEN LAESER koden — altsaa naar filen koeres som
-          # «php fil.php» fra CI, cron eller et udrulningsscript. I en
-          # webforespoergsel laeser ingen procesens exitkode, og der er
-          # exit('Not found.') helt i orden.
-          #
-          # ══ HVORFOR DEN BLEV SNAEVRET IND ══
-          #
-          # Foerste udgave meldte HVER exit('tekst') i hver .php-fil: 68 fund paa
-          # tvaers af huset, naesten alle websider, hvor koden aldrig laeses.
-          # Porten stod derfor roed paa main i ALLE repoer i to doegn. En
-          # vagtpost, der altid er roed, bliver ignoreret — og saa mister man
-          # ogsaa de fund, der ER rigtige.
-          #
-          # Efter indsnaevringen: 6 fund, og alle seks var ægte.
-          #   · Fem proever i Faktura naegtede at koere mod produktionsdatabasen
-          #     og afsluttede med kode nul. CI saa GROENNE proever, der aldrig
-          #     koerte.
-          #   · KSP's bootstrap afsluttede med nul, naar konfigurationen
-          #     manglede. Et script, der hentede den ind, meldte succes uden at
-          #     have gjort noget.
-          #
-          # Til gengaeld faanger den nu ogsaa die('tekst'), og den foelger
-          # require/include, saa en hjaelpefil arver sin kalders vilkaar.
-          #
-          # KOMMENTARER TAELLER IKKE MED. En tidlig udgave meldte fejl paa de
-          # steder i koden, der FORKLARER reglen — og et tjek, der straffer
-          # dokumentationen af sig selv, bliver slaaet fra.
+          # Check only PHP files executed by command-line tooling, not web
+          # entry points whose process exit status is not consumed.
           python3 - <<'PYKODE'
           import re, subprocess, sys, os
 

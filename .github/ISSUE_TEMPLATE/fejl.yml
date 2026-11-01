@@ -1,69 +1,35 @@
-name: Fejl
-description: Noget virker ikke som det skal
-type: Bug
-labels: ["prioritet: høj"]
-assignees: ["MrKoadic"]
+name: Report a problem with this repository
+description: Report a problem with the public organization profile or shared documentation.
+title: "[Problem]: "
 body:
-  - type: textarea
-    id: hvad
+  - type: markdown
     attributes:
-      label: Hvad sker der
-      description: Beskriv fejlen.
-    validations:
-      required: true
-
-  - type: textarea
-    id: forventet
-    attributes:
-      label: Hvad burde der ske i stedet
-    validations:
-      required: true
-
-  - type: textarea
-    id: trin
-    attributes:
-      label: Sådan fremkalder man fejlen
       value: |
-        1.
-        2.
-        3.
+        Use this form for issues in this public repository only. For product support, visit [koadic.dk](https://koadic.dk). Never include personal data, credentials, or confidential information.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What is wrong?
+      description: Describe the problem and where you found it.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can we reproduce it?
+      placeholder: "1. Open ...\n2. Follow ...\n3. Observe ..."
     validations:
       required: false
-
-  - type: dropdown
-    id: hvor
-    attributes:
-      label: Hvor
-      options:
-        - Hjemmesiden
-        - Medarbejder-systemet
-        - iOS-appen
-        - Management Panel
-        - CRM
-        - Helpdesk
-        - Kundeportal
-        - Server / drift
-        - Andet
-    validations:
-      required: true
-
-  - type: dropdown
-    id: alvor
-    attributes:
-      label: Hvor slemt er det
-      options:
-        - Kritisk — systemet er nede eller data er i fare
-        - Alvorligt — vigtig funktion virker ikke
-        - Generende — der findes en omvej
-        - Kosmetisk
-      default: 1
-    validations:
-      required: true
-
   - type: textarea
-    id: ekstra
+    id: context
     attributes:
-      label: Skærmbilleder eller fejlbeskeder
-      description: Træk billeder direkte ind i feltet.
+      label: Additional context
+      description: Add links or screenshots that do not contain private information.
     validations:
       required: false
