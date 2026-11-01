@@ -13,7 +13,7 @@ permissions:
 jobs:
   sorter:
     name: Tildel og mærk
-    runs-on: [self-hosted, koadic-vps]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Sæt ansvarlig, prioritet og milepæl
