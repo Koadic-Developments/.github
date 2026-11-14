@@ -55,6 +55,20 @@ Required checks must report on the latest commit. A green check is evidence
 only for what that check actually ran; it does not prove a deployment or a
 working production flow.
 
+## Workflow permissions and dependencies
+
+The organization gives `GITHUB_TOKEN` read-only permissions by default. Each
+workflow or job must declare the smallest permissions it needs, and write
+access must be granted only to the specific scope that performs the write.
+When a workflow calls a reusable workflow, review both the caller's and the
+reusable workflow's permission requirements before changing either one.
+
+Pin third-party actions to a verified full commit SHA where practical. Review
+the upstream repository and release before changing a pinned commit; do not
+copy an unverified SHA from an example. A mandatory organization-wide SHA rule
+must wait until every workflow and shared reusable workflow has been migrated
+and checked, because enabling it early can stop builds and deployments.
+
 ## 4. Verify in preview or staging
 
 For user-facing or production-sensitive changes, deploy to an isolated preview
