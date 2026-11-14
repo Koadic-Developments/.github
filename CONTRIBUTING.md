@@ -28,6 +28,23 @@ to deploy or roll back. Reviewers should focus on behavior, security, data
 handling, accessibility where relevant, and unintended effects on other
 systems.
 
+Write the description for a teammate who has not followed the implementation.
+Summarize the user or operator impact, explain the important design choices,
+name affected systems, and call out database, API, permission, privacy, and
+compatibility changes. Keep the detail proportional: a typo fix needs a short
+description, while authentication, payroll, personal data, infrastructure,
+or cross-product changes need explicit risks and recovery steps.
+
+Authors and coding assistants must report only work that actually happened.
+List exact verification commands and outcomes; do not say that a test, preview,
+deployment, or production flow passed unless it was observed. Include a clear
+deployment order and rollback path when the change needs one. Use the shared
+pull request template unless the repository has a more relevant one.
+
+Do not enable automatic merging. A person must review the final diff and
+verification evidence before merge. Keep merge and production deployment as
+separate decisions.
+
 Repository-specific PR checks should run when a pull request is opened or
 updated. Keep checks relevant to the changed code, such as syntax, typecheck,
 build, focused tests, secret scanning, or dependency review. Do not add
