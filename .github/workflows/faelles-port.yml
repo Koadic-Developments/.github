@@ -17,7 +17,7 @@ jobs:
     name: Syntaks
     runs-on: [self-hosted, koadic-vps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify runner PHP
         env:
@@ -60,7 +60,7 @@ jobs:
     name: Fejlfindingsrester
     runs-on: [self-hosted, koadic-vps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: var_dump, dd, console.log
         run: |
@@ -116,7 +116,7 @@ jobs:
     name: En fejl må ikke se ud som en succes
     runs-on: [self-hosted, koadic-vps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: exit med en tekst, hvor koden bliver laest
         run: |
@@ -295,7 +295,7 @@ jobs:
     name: Æ, ø og å
     runs-on: [self-hosted, koadic-vps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Filerne er gyldig UTF-8
         run: |
