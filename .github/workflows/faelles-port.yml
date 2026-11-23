@@ -300,7 +300,7 @@ jobs:
   tegnsaet:
     if: github.repository_owner == 'Koadic-Developments'
     name: Æ, ø og å
-    runs-on: [self-hosted, koadic-vps]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
